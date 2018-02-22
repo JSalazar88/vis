@@ -1,77 +1,138 @@
 <!DOCTYPE HTML>
 <html>
-<head>
-  <title>Timeline | Manipulation example</title>
+  <head>
+    <title>Timeline | Manipulation example</title>
 
-  <style>
-    body, html {
-      font-family: arial, sans-serif;
-      font-size: 11pt;
-    }
-  </style>
+    <style>
+      body, html {
+        font-family: arial, sans-serif;
+        font-size: 11pt;
+      }
+
+      .vis-item.vis-background.ayem {
+        background: linear-gradient(to right, rgba(90,103,144,1) , rgba(241,192,44,1));
+      }
+      .vis-item.vis-background.pyem {
+        background: linear-gradient(to right, rgba(241,192,44,1) , rgba(90,103,144,1));
+      }
+      .vis-item.vis-background.day {
+        background: url("../../../dist/blurry2.jpg");
+        background-size: 100% 100%;
+      }
+      .vis-item.vis-background.ayem2 {
+        background-image:
+            url("../../../dist/starsLeft.png"),
+            radial-gradient(circle at right,  rgba(241,192,44,1) 0%,rgba(1,1,1,.1) 30%),
+            -webkit-linear-gradient(90deg, rgba(1,41,63,0.90) 10%, rgba(1,41,63,0.80) 25%, rgba(166, 230, 255, 0.95) 70%); /* Chrome 10+, Saf5.1+ */
+        background-image:
+            url("../../../dist/starsLeft.png"),
+            radial-gradient(circle at right,  rgba(241,192,44,1) 0%,rgba(1,1,1,.1) 30%),
+            -moz-linear-gradient(90deg, rgba(1,41,63,0.90) 10%, rgba(1,41,63,0.80) 25%, rgba(166, 230, 255, 0.95) 70%); /* FF3.6+ */
+        background-image:
+            url("../../../dist/starsLeft.png"),
+            radial-gradient(circle at right,  rgba(241,192,44,1) 0%,rgba(1,1,1,.1) 30%),
+            -ms-linear-gradient(90deg, rgba(1,41,63,0.90) 10%, rgba(1,41,63,0.80) 25%, rgba(166, 230, 255, 0.95) 70%); /* IE10 */
+        background-image:
+            url("../../../dist/starsLeft.png"),
+            radial-gradient(circle at right,  rgba(241,192,44,1) 0%,rgba(1,1,1,.1) 30%),
+            -o-linear-gradient(90deg, rgba(1,41,63,0.90) 10%, rgba(1,41,63,0.80) 25%, rgba(166, 230, 255, 0.95) 70%); /* Opera 11.10+ */
+        background-image:
+            url("../../../dist/starsLeft.png"),
+            radial-gradient(circle at right,  rgba(241,192,44,1) 0%,rgba(1,1,1,.1) 30%),
+            linear-gradient(90deg, rgba(1,41,63,0.90) 10%, rgba(1,41,63,0.80) 25%, rgba(166, 230, 255, 0.95) 70%); /* W3C */
+        background-size: 100% 100%;
+      }
+      .vis-item.vis-background.pyem2 {
+        background-image:
+            url("../../../dist/starsRight.png"),
+            radial-gradient(circle at left,  rgba(241,192,44,1) 0%,rgba(1,1,1,.1) 30%),
+            -webkit-linear-gradient(90deg, rgba(166, 230, 255, 0.95) 10%, rgba(166, 230, 255, 0.95) 30%, rgba(1,41,63,0.90) 90%); /* Chrome 10+, Saf5.1+ */
+        background-image:
+            url("../../../dist/starsRight.png"),
+            radial-gradient(circle at left,  rgba(241,192,44,1) 0%,rgba(1,1,1,.1) 30%),
+            -moz-linear-gradient(90deg, rgba(166, 230, 255, 0.95) 10%, rgba(166, 230, 255, 0.95) 30%, rgba(1,41,63,0.90) 90%); /* FF3.6+ */
+        background-image:
+            url("../../../dist/starsRight.png"),
+            radial-gradient(circle at left,  rgba(241,192,44,1) 0%,rgba(1,1,1,.1) 30%),
+            -ms-linear-gradient(90deg, rgba(166, 230, 255, 0.95) 10%, rgba(166, 230, 255, 0.95) 30%, rgba(1,41,63,0.90) 90%); /* IE10 */
+        background-image:
+            url("../../../dist/starsRight.png"),
+            radial-gradient(circle at left,  rgba(241,192,44,1) 0%,rgba(1,1,1,.1) 30%),
+            -o-linear-gradient(90deg, rgba(166, 230, 255, 0.95) 10%, rgba(166, 230, 255, 0.95) 30%, rgba(1,41,63,0.90) 90%); /* Opera*/
+        background-image:
+            url("../../../dist/starsRight.png"),
+            radial-gradient(circle at left,  rgba(241,192,44,1) 0%,rgba(1,1,1,.1) 30%),
+            linear-gradient(90deg, rgba(166, 230, 255, 0.95) 10%, rgba(166, 230, 255, 0.95) 30%, rgba(1,41,63,0.90) 90%); /* W3C */
+        background-size: 100% 100%;
+      }
+
+    </style>
 
   <script src="../../../dist/vis.js"></script>
   <link href="../../../dist/vis-timeline-graph2d.min.css" rel="stylesheet" type="text/css" />
-  
-</head>
-<body>
 
-<p>An editable timeline allows to drag items around, create new items, and remove items. Changes are logged in the browser console.</p>
+  </head>
+  <body>
 
-<div id="visualization"></div>
+    <p>Show us what your typical sleep schedule looks like by adjusting the sliders below. You can also drag the timeline as needed (e.g. for shift workers).</p>
 
-<script>
-  // create a dataset with items
-  // we specify the type of the fields `start` and `end` here to be strings
-  // containing an ISO date. The fields will be outputted as ISO dates
-  // automatically getting data from the DataSet via items.get().
-  var items = new vis.DataSet({
-    type: { start: 'ISODate', end: 'ISODate' }
-  });
+    <div id="visualization"></div>
 
-  // add items to the DataSet
-  items.add([
-    {id: 1, content: 'item 1<br>start', start: '2014-01-23'},
-    {id: 2, content: 'item 2', start: '2014-01-18'},
-    {id: 3, content: 'item 3', start: '2014-01-21'},
-    {id: 4, content: 'item 4', start: '2014-01-19', end: '2014-01-24'},
-    {id: 5, content: 'item 5', start: '2014-01-28', type:'point'},
-    {id: 6, content: 'item 6', start: '2014-01-26'}
-  ]);
+    <script>
+      // create a dataset with items
+      // we specify the type of the fields `start` and `end` here to be strings
+      // containing an ISO date. The fields will be outputted as ISO dates
+      // automatically getting data from the DataSet via items.get().
+      var items = new vis.DataSet({
+        type: { start: 'ISODate', end: 'ISODate' }
+      });
 
-  // log changes to the console
-  items.on('*', function (event, properties) {
-    console.log(event, properties.items);
-  });
+      // add items to the DataSet
+      items.add(
+      [
+        {id: 'Day1Am', content: '', start: '2018-02-20 00:00:00', end: '2018-02-20 12:00:00', type: 'background', className: 'ayem2'},
+        {id: 'Day1Pm', content: '', start: '2018-02-20 12:00:01', end: '2018-02-20 23:59:59', type: 'background', className: 'pyem2'},
+        {id: 'Day2Am', content: '', start: '2018-02-21 00:00:00', end: '2018-02-21 12:00:00', type: 'background', className: 'ayem2'},
+        {id: 'Day2Pm', content: '', start: '2018-02-21 12:00:01', end: '2018-02-21 23:59:59', type: 'background', className: 'pyem2'},
+        {id: 1, content: 'Bed Time', start: '2018-02-20 21:00:00'},
+        {id: 2, content: 'Lights Out', start: '2018-02-20 22:00:00'},
+        {id: 4, content: 'Sleeping', start: '2018-02-20 22:45:00', end: '2018-02-21 07:00:00'},
+        {id: 6, content: 'Out of Bed', start: '2018-02-21 07:55:00'}
+      ]);
 
-  var container = document.getElementById('visualization');
-  var options = {
-    start: '2014-01-10',
-    end: '2014-02-10',
-    height: '300px',
+      // log changes to the console
+      items.on('*', function (event, properties) {
+        console.log(event, properties.items);
+      });
 
-    // allow selecting multiple items using ctrl+click, shift+click, or hold.
-    multiselect: true,
+      var container = document.getElementById('visualization');
+      var options =
+      {
+        min: new Date(2018, 1, 20),             // zero-based index for month
+        max: new Date(2018, 1, 22),             // zero-based index for month
+        zoomMin: 1000 * 60 * 60 * 12,           // one day in milliseconds
+        zoomMax: 1000 * 60 * 60 * 48,  // about three months in milliseconds
+        height: '300px',
 
-    // allow manipulation of items
-    editable: true,
+        // allow selecting multiple items using ctrl+click, shift+click, or hold.
+        multiselect: false,
 
-    /* alternatively, enable/disable individual actions:
+        // alternatively, enable/disable individual actions:
 
-    editable: {
-      add: true,
-      updateTime: true,
-      updateGroup: true,
-      remove: true
-    },
+        editable: {
+          add: false,
+          updateTime: true,
+          updateGroup: false,
+          remove: false
+        },
 
-    */
+        showCurrentTime: true
+      };
 
-    showCurrentTime: true
-  };
+      var timeline = new vis.Timeline(container, items, options);
+      timeline.setWindow('2018-02-20 12:00:00', '2018-02-21 12:00:00');
+      timeline.setWindow('2018-02-20 13:00:00', '2018-02-21 11:00:00', {animation: {duration: 1200, easingFunction: "easeInOutQuad"}});
 
-  var timeline = new vis.Timeline(container, items, options);
-
-</script>
-</body>
+    </script>
+  </body>
 </html>
