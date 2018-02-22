@@ -138,7 +138,12 @@
         showMajorLabels: true,
 
         // enable/disable individual actions:
-        editable: true,
+        editable: {
+          add: false,
+          updateTime: true,
+          updateGroup: false,
+          remove: false,
+        },
         showCurrentTime: false,
 
         onMoving: function (item, callback) {
@@ -162,7 +167,7 @@
             item.end   = rightMax;
           }
 
-          logEvent(item.end, rightMax);
+          logEvent(item.start, rightMax);
 
           // update time
           item.content = `${sleepLabels[item.id]}: ${new Date(item.start).getHours()}:${addZero(new Date(item.start).getMinutes())}`;
