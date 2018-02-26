@@ -163,8 +163,9 @@
 
         // bound items between neighbors, or global min/max
         onMoving: function (item, callback) {
-          var leftMin = minGlobal;
-          var rightMax = maxGlobal;
+          // note: vis event times are ISO times, so we must convert min/max
+          var leftMin = minGlobal.toISOString();
+          var rightMax = maxGlobal.toISOString();
           var prevIdx = item.id - 1;
           var nextIdx = item.id + 1;
 
