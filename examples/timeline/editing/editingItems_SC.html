@@ -193,8 +193,10 @@
 
       // create timeline obj
       var timeline = new vis.Timeline(container, items, options);
-      // timeline.setWindow('2018-02-20 13:00:00', '2018-02-21 11:00:00', {animation: {duration: animationDurMillis, easingFunction: "easeInOutQuad"}});
+
+      // set window, and first selection
       timeline.setWindow(`${isoToday} 13:00:00`, `${isoTomorrow} 11:00:00`, {animation: {duration: animationDurMillis, easingFunction: "easeInOutQuad"}});
+      timeline.setSelection(1);
 
       // DEBUG: log all events
       // items.on('*', function (event, properties) {
