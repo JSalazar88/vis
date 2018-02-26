@@ -81,6 +81,7 @@
     <div id="log"></div>
 
     <script type="text/javascript">
+      var isDebug = false;
       var numSleepItems = 5;
       var numMinutesPerStep = 10;
       var animationDurMillis = 750;
@@ -102,18 +103,18 @@
       // ISO Dates: today & tomorrow
       var isoToday = `${nowYear}-${addZero(nowMonth)}-${addZero(nowDay)}`;
       var isoTomorrow = `${nowYear}-${addZero(nowMonth)}-${addZero(nowDay+1)}`;
-      logEvent(`isoToday: ${isoToday}`);
-      logEvent(`isoTomorrow: ${isoTomorrow}`);
+      logEvent(`isoToday: ${isoToday}`, isDebug);
+      logEvent(`isoTomorrow: ${isoTomorrow}`, isDebug);
 
       // add items to the DataSet
       var sleepLabels = ["", "Bed Time", "Lights Out", "Fall Asleep", "Wake Up", "Out of Bed"];
       items.add(
       [
-        {id: 1, content: `${sleepLabels[1]}: 21:30`, start: `${isoToday} 21:30:00`},
-        {id: 2, content: `${sleepLabels[2]}: 22:00`, start: `${isoToday} 22:00:00`},
-        {id: 3, content: `${sleepLabels[3]}: 22:45`, start: `${isoToday} 22:45:00`},
-        {id: 4, content: `${sleepLabels[4]}: 7:00`,  start: `${isoTomorrow} 07:00:00`},
-        {id: 5, content: `${sleepLabels[5]}: 7:55`,  start: `${isoTomorrow} 07:55:00`},
+        {id: 1, content: `${sleepLabels[1]}: 9:30 pm`, start: `${isoToday} 21:30:00`},
+        {id: 2, content: `${sleepLabels[2]}: 10:00 pm`, start: `${isoToday} 22:00:00`},
+        {id: 3, content: `${sleepLabels[3]}: 10:45 pm`, start: `${isoToday} 22:45:00`},
+        {id: 4, content: `${sleepLabels[4]}: 7:00 am`,  start: `${isoTomorrow} 07:00:00`},
+        {id: 5, content: `${sleepLabels[5]}: 7:55 am`,  start: `${isoTomorrow} 07:55:00`},
         {id: 'Day1Am', content: '', start: `${isoToday} 00:00:00`, end: `${isoToday} 12:00:00`, type: 'background', className: 'am2'},
         {id: 'Day1Pm', content: '', start: `${isoToday} 12:00:01`, end: `${isoToday} 23:59:59`, type: 'background', className: 'pm2'},
         {id: 'Day2Am', content: '', start: `${isoTomorrow} 00:00:00`, end: `${isoTomorrow} 12:00:00`, type: 'background', className: 'am2'},
@@ -133,7 +134,6 @@
       var minGlobal = new Date(nowYear, nowMonth-1, nowDay);   // month param expects zero-indexed
       var maxGlobal = new Date(nowYear, nowMonth-1, nowDay+2); // month param expects zero-indexed
 
-      var container = document.getElementById('visualization');
       var options =
       {
         // bounds and size props
@@ -183,15 +183,24 @@
             item.end   = rightMax;
           }
 
-          logEvent(item.start, rightMax);
+          logEvent(item.start, rightMax, isDebug);
 
           // update time, and send back the (possibly) changed item
-          item.content = `${sleepLabels[item.id]}: ${new Date(item.start).getHours()}:${addZero(new Date(item.start).getMinutes())}`;
+          var newTime = new Date(item.start);
+          var newHours = newTime.getHours();
+          var newMins = addZero(newTime.getMinutes());
+          var amPm = newHours >= 12 ? 'pm' : 'am';
+
+          // 12hr clock
+          newHours = newHours%12;
+          newHours = newHours ? newHours : 12;
+          item.content = `${sleepLabels[item.id]}: ${newHours}:${newMins} ${amPm}`;
           callback(item);
         }
       };
 
       // create timeline obj
+      var container = document.getElementById('visualization');
       var timeline = new vis.Timeline(container, items, options);
 
       // set window, and first selection
@@ -200,11 +209,12 @@
 
       // DEBUG: log all events
       // items.on('*', function (event, properties) {
-      //   logEvent(event, properties);
+      //   logEvent(event, properties, isDebug);
       // });
 
       // helper for logging event/props
-      function logEvent(event, properties) {
+      function logEvent(event, properties, isDebug) {
+        if ( !isDebug ) return;
         var log = document.getElementById('log');
         var msg = document.createElement('div');
         msg.innerHTML = 'event=' + JSON.stringify(event) + ', ' +
@@ -213,7 +223,8 @@
       }
 
       // helper for logging event/props
-      function logEvent(event) {
+      function logEvent(event, isDebug) {
+        if ( !isDebug ) return;
         var log = document.getElementById('log');
         var msg = document.createElement('div');
         msg.innerHTML = JSON.stringify(event);
