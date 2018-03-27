@@ -133,13 +133,15 @@
 
       var minGlobal = new Date(nowYear, nowMonth-1, nowDay);   // month param expects zero-indexed
       var maxGlobal = new Date(nowYear, nowMonth-1, nowDay+2); // month param expects zero-indexed
+      var minGlobalIso = minGlobal.toISOString(); // month param expects zero-indexed
+      var maxGlobalIso = maxGlobal.toISOString(); // month param expects zero-indexed
 
       var options =
       {
         // bounds and size props
         min: minGlobal,
         max: maxGlobal,
-        zoomMin: 1000 * 60 * 60 * 12, // one day (millis)
+        zoomMin: 1000 * 60 * 60 * 12, // half day (millis)
         zoomMax: 1000 * 60 * 60 * 48, // two days (millis)
         timeAxis: {scale: 'minute', step: numMinutesPerStep},
         height: '300px',
@@ -164,8 +166,9 @@
         // bound items between neighbors, or global min/max
         onMoving: function (item, callback) {
           // note: vis event times are ISO times, so we must convert min/max
-          var leftMin = minGlobal.toISOString();
-          var rightMax = maxGlobal.toISOString();
+          var leftMin = minGlobalIso;
+          var rightMax = maxGlobalIso;
+
           var prevIdx = item.id - 1;
           var nextIdx = item.id + 1;
 
@@ -184,7 +187,9 @@
             item.end   = rightMax;
           }
 
-          logEvent(item.start, rightMax, isDebug);
+          if ( isDebug == true ) {
+            logEvent(item.start, rightMax, isDebug);
+          }
 
           // update time, and send back the (possibly) changed item
           var newTime = new Date(item.start);
@@ -203,6 +208,10 @@
       // create timeline obj
       var container = document.getElementById('visualization');
       var timeline = new vis.Timeline(container, items, options);
+      
+      // set visibility explicitly
+      var timelineDiv = container.firstChild;
+      timelineDiv.style.visibility = "visible";
 
       // set window, and first selection
       timeline.setWindow(isoToday + "T13:00:00", isoTomorrow + "T11:00:00", {animation: {duration: animationDurMillis, easingFunction: "easeInOutQuad"}});
