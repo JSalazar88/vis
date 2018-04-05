@@ -92,6 +92,13 @@
       var nowMonth = nowDate.getMonth() + 1; // zero-indexed
       var nowDay = nowDate.getDate();
 
+      // tomorrow
+      var tomorrow = new Date();
+      tomorrow.setDate(tomorrow.getDate()+1);
+      var tomYear = tomorrow.getFullYear();
+      var tomMonth = tomorrow.getMonth() + 1; // zero-indexed
+      var tomDay = tomorrow.getDate();
+
       // create a dataset with items
       // we specify the type of the fields `start` and `end` here to be strings
       // containing an ISO date. The fields will be outputted as ISO dates
@@ -102,7 +109,7 @@
 
       // ISO Dates: today & tomorrow
       var isoToday = nowYear + "-" + addZero(nowMonth) + "-" + addZero(nowDay);
-      var isoTomorrow = nowYear + "-" + addZero(nowMonth) + "-" + addZero(nowDay+1);
+      var isoTomorrow = tomYear + "-" + addZero(tomMonth) + "-" + addZero(tomDay);
       logEvent("isoToday: " + isoToday, isDebug);
       logEvent("isoTomorrow: " + isoTomorrow, isDebug);
 
@@ -132,7 +139,7 @@
       //   });
 
       var minGlobal = new Date(nowYear, nowMonth-1, nowDay);   // month param expects zero-indexed
-      var maxGlobal = new Date(nowYear, nowMonth-1, nowDay+2); // month param expects zero-indexed
+      var maxGlobal = new Date(tomYear, tomMonth-1, tomDay+1); // month param expects zero-indexed
       var minGlobalIso = minGlobal.toISOString(); // month param expects zero-indexed
       var maxGlobalIso = maxGlobal.toISOString(); // month param expects zero-indexed
 
