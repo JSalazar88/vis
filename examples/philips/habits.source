@@ -64,9 +64,24 @@
 
 <div id="log"> </div>
 <script type="text/javascript">
+      var isDebug = false;
       var numSleepItems = 5;
       var numMinutesPerStep = 10;
       var animationDurMillis = 750;
+
+      // current date
+      var nowDate = new Date();
+      var nowYear = nowDate.getFullYear();
+      var nowMonth = nowDate.getMonth() + 1; // zero-indexed
+      var nowDay = nowDate.getDate();
+
+      // tomorrow
+      var tomorrow = new Date();
+      tomorrow.setDate(tomorrow.getDate()+1);
+      var tomYear = tomorrow.getFullYear();
+      var tomMonth = tomorrow.getMonth() + 1; // zero-indexed
+      var tomDay = tomorrow.getDate();
+
       // create a dataset with items
       // we specify the type of the fields `start` and `end` here to be strings
       // containing an ISO date. The fields will be outputted as ISO dates
@@ -74,20 +89,26 @@
       var items = new vis.DataSet({
         type: { start: 'ISODate', end: 'ISODate' }
       });
-      
+
+      // ISO Dates: today & tomorrow
+      var isoToday = nowYear + "-" + addZero(nowMonth) + "-" + addZero(nowDay);
+      var isoTomorrow = tomYear + "-" + addZero(tomMonth) + "-" + addZero(tomDay);
+      logEvent("isoToday: " + isoToday, isDebug);
+      logEvent("isoTomorrow: " + isoTomorrow, isDebug);
+
       // add items to the DataSet
       var sleepLabels = ["", "Bed Time", "Lights Out", "Fall Asleep", "Wake Up", "Out of Bed"];
       items.add(
       [
-        { id: 1, content: `${ sleepLabels[1] }: 21:30`, start: '2018-02-20 21:30:00' },
-        { id: 2, content: `${ sleepLabels[2] }: 22:00`, start: '2018-02-20 22:00:00' },
-        { id: 3, content: `${ sleepLabels[3] }: 22:45`, start: '2018-02-20 22:45:00' },
-        { id: 4, content: `${ sleepLabels[4] }: 7:00`,  start: '2018-02-21 07:00:00' },
-        { id: 5, content: `${ sleepLabels[5] }: 7:55`,  start: '2018-02-21 07:55:00' },
-        { id: 'Day1Am', content: '', start: '2018-02-20 00:00:00', end: '2018-02-20 12:00:00', type: 'background', className: 'am2' },
-        { id: 'Day1Pm', content: '', start: '2018-02-20 12:00:01', end: '2018-02-20 23:59:59', type: 'background', className: 'pm2' },
-        { id: 'Day2Am', content: '', start: '2018-02-21 00:00:00', end: '2018-02-21 12:00:00', type: 'background', className: 'am2' },
-        { id: 'Day2Pm', content: '', start: '2018-02-21 12:00:01', end: '2018-02-21 23:59:59', type: 'background', className: 'pm2' }
+        { id: 1, content: sleepLabels[1] + ": 9:30 pm", start: isoToday + "T21:30:00" },
+        { id: 2, content: sleepLabels[2] + ": 10:00 pm", start: isoToday + "T22:00:00" },
+        { id: 3, content: sleepLabels[3] + ": 10:45 pm", start: isoToday + "T22:45:00" },
+        { id: 4, content: sleepLabels[4] + ": 7:00 am",  start: isoTomorrow + "T07:00:00" },
+        { id: 5, content: sleepLabels[5] + ": 7:55 am",  start: isoTomorrow + "T07:55:00" },
+        { id: 'Day1Am', content: "", start: isoToday + "T00:00:00", end: isoToday + "T12:00:00", type: 'background', className: 'am2' },
+        { id: 'Day1Pm', content: "", start: isoToday + "T12:00:01", end: isoToday + "T23:59:59", type: 'background', className: 'pm2' },
+        { id: 'Day2Am', content: "", start: isoTomorrow + "T00:00:00", end: isoTomorrow + "T12:00:00", type: 'background', className: 'am2' },
+        { id: 'Day2Pm', content: "", start: isoTomorrow + "T12:00:01", end: isoTomorrow + "T23:59:59", type: 'background', className: 'pm2' },
       ]);
 
       // log changes to the console
@@ -95,34 +116,49 @@
         console.log(event, properties.items);
       });
 
-      var minL = new Date(2018, 1, 20); // 1 april
-      var maxR = new Date(2018, 1, 22); // 30 april
+      // not sure how to programatically init the item labels, so just set them in add method, above
+      // items.forEach(function (item) { 
+      //     item.content = `${ sleepLabels[item.id] }: ${ new Date(item.start).getHours() }:${ addZero(new Date(item.start).getMinutes()) }`;
+      //   });
 
-      var container = document.getElementById('visualization');
+      var minGlobal = new Date(nowYear, nowMonth-1, nowDay);   // month param expects zero-indexed
+      var maxGlobal = new Date(tomYear, tomMonth-1, tomDay+1); // month param expects zero-indexed
+      var minGlobalIso = minGlobal.toISOString(); // month param expects zero-indexed
+      var maxGlobalIso = maxGlobal.toISOString(); // month param expects zero-indexed
+
       var options =
       {
-        min: minL,             // zero-based index for month
-        max: maxR,             // zero-based index for month
-        zoomMin: 1000 * 60 * 60 * 12,           // one day in milliseconds
-        zoomMax: 1000 * 60 * 60 * 48,           // two days
+        // bounds and size props
+        min: minGlobal,
+        max: maxGlobal,
+        zoomMin: 1000 * 60 * 60 * 12, // half day (millis)
+        zoomMax: 1000 * 60 * 60 * 48, // two days (millis)
+        timeAxis: { scale: 'minute', step: numMinutesPerStep },
         height: '300px',
         width: '1200px',
 
-        // allow selecting multiple items using ctrl+click, shift+click, or hold.
+        // self-explanatory settings
         multiselect: false,
         horizontalScroll: true,
         zoomKey: 'ctrlKey',
-        timeAxis: { scale: 'minute', step: numMinutesPerStep },
         showMinorLabels: false,
         showMajorLabels: true,
 
         // enable/disable individual actions:
-        editable: true,
+        editable: { 
+          add: false,
+          updateTime: true,
+          updateGroup: false,
+          remove: false,
+         },
         showCurrentTime: false,
 
-        onMoving: function (item, callback) {
-          var leftMin = minL;
-          var rightMax = maxR;
+        // bound items between neighbors, or global min/max
+        onMoving: function (item, callback) { 
+          // note: vis event times are ISO times, so we must convert min/max
+          var leftMin = minGlobalIso;
+          var rightMax = maxGlobalIso;
+
           var prevIdx = item.id - 1;
           var nextIdx = item.id + 1;
 
@@ -131,33 +167,54 @@
           if (nextIdx <= numSleepItems) rightMax = items.get(nextIdx).start;
 
           // bound this item between neighbors
-          if (item.start < leftMin) {
+          if (item.start < leftMin) { 
             item.start = leftMin;
-          }
-          if (item.start > rightMax) {
+           }
+          if (item.start > rightMax) { 
             item.start = rightMax;
-          }
-          if (item.end   > rightMax) {
+           }
+          if (item.end   > rightMax) { 
             item.end   = rightMax;
-          }
+           }
 
-          logEvent(item.start, rightMax);
+          if ( isDebug == true ) { 
+            logEvent(item.start, rightMax, isDebug);
+           }
 
-          // update time
-          item.content = `${ sleepLabels[item.id] }: ${ new Date(item.start).getHours() }:${ addZero(new Date(item.start).getMinutes()) }`;
-          
-          callback(item); // send back the (possibly) changed item
-        }
+          // update time, and send back the (possibly) changed item
+          var newTime = new Date(item.start);
+          var newHours = newTime.getHours();
+          var newMins = addZero(newTime.getMinutes());
+          var amPm = newHours >= 12 ? 'pm' : 'am';
+
+          // 12hr clock
+          newHours = newHours%12;
+          newHours = newHours ? newHours : 12;
+          item.content = sleepLabels[item.id] + ": " + newHours + ":" + newMins + " " + amPm;
+          callback(item);
+         }
       };
 
+      // create timeline obj
+      var container = document.getElementById('visualization');
       var timeline = new vis.Timeline(container, items, options);
-      timeline.setWindow('2018-02-20 13:00:00', '2018-02-21 11:00:00', { animation: { duration: animationDurMillis, easingFunction: "easeInOutQuad" } });
+      
+      // set visibility explicitly
+      var timelineDiv = container.firstChild;
+      timelineDiv.style.visibility = "visible";
 
+      // set window, and first selection
+      timeline.setWindow(isoToday + "T13:00:00", isoTomorrow + "T11:00:00", { animation: { duration: animationDurMillis, easingFunction: "easeInOutQuad" } });
+      timeline.setSelection(1);
+
+      // DEBUG: log all events
       // items.on('*', function (event, properties) {
-      //   logEvent(event, properties);
+      //   logEvent(event, properties, isDebug);
       // });
 
-      function logEvent(event, properties) {
+      // helper for logging event/props
+      function logEvent(event, properties, isDebug) {
+        if ( !isDebug ) return;
         var log = document.getElementById('log');
         var msg = document.createElement('div');
         msg.innerHTML = 'event=' + JSON.stringify(event) + ', ' +
@@ -165,6 +222,16 @@
         log.firstChild ? log.insertBefore(msg, log.firstChild) : log.appendChild(msg);
       }
 
+      // helper for logging event/props
+      function logEvent(event, isDebug) { 
+        if ( !isDebug ) return;
+        var log = document.getElementById('log');
+        var msg = document.createElement('div');
+        msg.innerHTML = JSON.stringify(event);
+        log.firstChild ? log.insertBefore(msg, log.firstChild) : log.appendChild(msg);
+       }
+
+      // helper for adding zero to times (e.g. '01' in 12:01)
       function addZero(i) {
         if (i < 10) {
             i = "0" + i;
