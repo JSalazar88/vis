@@ -177,9 +177,8 @@
             item.end   = rightMax;
            }
 
-          if ( isDebug == true ) { 
-            logEvent(item.start, rightMax, isDebug);
-           }
+          //logEvent(item, rightMax, isDebug);
+          resetValue(item);
 
           // update time, and send back the (possibly) changed item
           var newTime = new Date(item.start);
@@ -239,4 +238,86 @@
         return i;
       }
 
+$(document).ready(function() {  
+  
+  //set Limesurvey value  
+  var keys = Object.keys(items._data);
+  for(var i=0;i<keys.length;i++){
+    var key = keys[i];  
+    sleep = items._data[key];
+     
+    resetValue(sleep);
+  }   
+});
+
+var fallAsleep = ''; 
+ 
+function resetValue(sleep){    
+
+  if(sleep.id == 1){ //  BedTime 
+    $('#answer171981X87X1035').val(getHours(sleep.start));  
+    $('#answer171981X87X1035').change();  
+    console.log('BedTime ==' + getHours(sleep.start));   
+  }else if(sleep.id == 2){ // LightsOutTime
+    $('#answer171981X87X1185').val(getHours(sleep.start));  
+    $('#answer171981X87X1185').change();  
+    console.log('LightsOutTime ==' + getHours(sleep.start));  
+    howMuchSleep();
+  }else if(sleep.id == 3){ // Fall asleep
+    fallAsleep = getHours(sleep.start);  
+    console.log('Fall asleep ==' + getHours(sleep.start));   
+    howMuchSleep();
+  }else if(sleep.id == 4){ // WakeTime
+    $('#answer171981X87X1187').val(getHours(sleep.start));  
+    $('#answer171981X87X1187').change();  
+    console.log('WakeTime ==' + getHours(sleep.start));   
+    howMuchSleep();
+  }else if(sleep.id == 5){  // Out of bed
+    $('#answer171981X87X1188').val(getHours(sleep.start));
+    $('#answer171981X87X1188').change();  
+    console.log('Out of bed ==' + getHours(sleep.start));   
+  }
+}
+
+function getHours (start){   
+  var newTime = new Date(start);
+  var itemHours = newTime.getHours();
+  var itemMins = addZero(newTime.getMinutes());
+  return itemHours + ':' + itemMins; 
+}
+
+            
+function howMuchSleep (){  
+  calFallAsleep();
+  calHowMuchSleep();
+}
+
+function calFallAsleep(){   
+  var bed = $('#answer171981X87X1185').val().split(':'); 
+  var asleep = fallAsleep.split(':'); 
+  var bedMinutes = (bed[0] * 60) + parseInt(bed[1]);
+  var sleepMinutes = (asleep[0] * 60) + parseInt(asleep[1]); 
+   
+  if(bedMinutes > sleepMinutes){ // between midnight 
+    sleepMinutes = sleepMinutes + (24 * 60);
+  } 
+  sleepMinutes = sleepMinutes - bedMinutes; 
+   
+  $('#answer171981X87X1186').val(Math.floor(sleepMinutes / 60) + ':' + ('0' + (sleepMinutes % 60)).slice(-2)); 
+  $('#answer171981X87X1186').change();  
+}
+
+function calHowMuchSleep (){    
+  var sleep = $('#answer171981X87X1187').val().split(':'); 
+  var sleepMinutes = (sleep[0] * 60) + parseInt(sleep[1]);
+  var asleep = fallAsleep.split(':'); 
+  var bedMinutes = (asleep[0] * 60) + parseInt(asleep[1]);
+  
+  if(bedMinutes > sleepMinutes){ // between midnight 
+    sleepMinutes = sleepMinutes + (24 * 60);
+  }
+  sleepMinutes = sleepMinutes - bedMinutes; 
+  $('#answer171981X87X1189').val(Math.floor(sleepMinutes / 60) + ':' + ('0' + (sleepMinutes % 60)).slice(-2)); 
+  $('#answer171981X87X1189').change();  
+} 
     </script>
