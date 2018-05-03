@@ -260,26 +260,26 @@ var fallAsleep = '';
 function resetValue(sleep){    
 
   if(sleep.id == 1){ //  BedTime 
-    $('#answer171981X87X1035').val(getHours(sleep.start));  
-    $('#answer171981X87X1035').change();  
+    $('#answer959247X285X3183').val(getHours(sleep.start));  
+    $('#answer959247X285X3183').change();  
     console.log('BedTime ==' + getHours(sleep.start));   
-  }else if(sleep.id == 2){ // LightsOutTime
-    $('#answer171981X87X1185').val(getHours(sleep.start));  
-    $('#answer171981X87X1185').change();  
+  }else if(sleep.id == 2){ // LightsOutTime (overwritten as VSOL)
+    $('#answer959247X285X3184').val(getHours(sleep.start));  
+    $('#answer959247X285X3184').change();  
     console.log('LightsOutTime ==' + getHours(sleep.start));  
     howMuchSleep();
   }else if(sleep.id == 3){ // Fall asleep
     fallAsleep = getHours(sleep.start);  
     console.log('Fall asleep ==' + getHours(sleep.start));   
     howMuchSleep();
-  }else if(sleep.id == 4){ // WakeTime
-    $('#answer171981X87X1187').val(getHours(sleep.start));  
-    $('#answer171981X87X1187').change();  
+  }else if(sleep.id == 4){ // WakeTime (overwritten as VTotalSleepTime)
+    $('#answer959247X285X3186').val(getHours(sleep.start));  
+    $('#answer959247X285X3186').change();  
     console.log('WakeTime ==' + getHours(sleep.start));   
     howMuchSleep();
   }else if(sleep.id == 5){  // Out of bed
-    $('#answer171981X87X1188').val(getHours(sleep.start));
-    $('#answer171981X87X1188').change();  
+    $('#answer959247X285X3187').val(getHours(sleep.start));
+    $('#answer959247X285X3187').change();  
     console.log('Out of bed ==' + getHours(sleep.start));   
   }
 }
@@ -293,36 +293,40 @@ function getHours (start){
 
             
 function howMuchSleep (){  
-  calFallAsleep();
-  calHowMuchSleep();
+  calSOL();
+  calTotalSleepTime();
 }
 
-function calFallAsleep(){   
-  var bed = $('#answer171981X87X1185').val().split(':'); 
-  var asleep = fallAsleep.split(':'); 
-  var bedMinutes = (bed[0] * 60) + parseInt(bed[1]);
-  var sleepMinutes = (asleep[0] * 60) + parseInt(asleep[1]); 
+function calSOL(){   
+  var timeLightsOut = $('#answer959247X285X3184').val().split(':'); 
+  var timeLightsOutMin = (timeLightsOut[0] * 60) + parseInt(timeLightsOut[1]);
+  var timeFellAsleep = fallAsleep.split(':'); 
+  var timeFellAsleepMin = (timeFellAsleep[0] * 60) + parseInt(timeFellAsleep[1]); 
    
-  if(bedMinutes > sleepMinutes){ // between midnight 
-    sleepMinutes = sleepMinutes + (24 * 60);
+  if(timeLightsOutMin > timeFellAsleepMin){ // between midnight 
+    timeFellAsleepMin = timeFellAsleepMin + (24 * 60);
   } 
-  sleepMinutes = sleepMinutes - bedMinutes; 
-   
-  $('#answer171981X87X1186').val(Math.floor(sleepMinutes / 60) + ':' + ('0' + (sleepMinutes % 60)).slice(-2)); 
-  $('#answer171981X87X1186').change();  
+
+  timeFellAsleepMin = timeFellAsleepMin - timeLightsOutMin; 
+  
+  // Set to [V]SOL
+  $('#answer959247X285X3188').val(Math.floor(timeFellAsleepMin / 60) + ':' + ('0' + (timeFellAsleepMin % 60)).slice(-2)); 
+  $('#answer959247X285X3188').change();  
 }
 
-function calHowMuchSleep (){    
-  var sleep = $('#answer171981X87X1187').val().split(':'); 
-  var sleepMinutes = (sleep[0] * 60) + parseInt(sleep[1]);
-  var asleep = fallAsleep.split(':'); 
-  var bedMinutes = (asleep[0] * 60) + parseInt(asleep[1]);
+function calTotalSleepTime (){    
+  var timeDidWake = $('#answer959247X285X3186').val().split(':'); 
+  var timeDidWakeMin = (timeDidWake[0] * 60) + parseInt(timeDidWake[1]);
+  var timeFellAsleep = fallAsleep.split(':'); 
+  var timeFellAsleepMin = (timeFellAsleep[0] * 60) + parseInt(timeFellAsleep[1]);
   
-  if(bedMinutes > sleepMinutes){ // between midnight 
-    sleepMinutes = sleepMinutes + (24 * 60);
+  if(timeFellAsleepMin > timeDidWakeMin){ // between midnight 
+    timeDidWakeMin = timeDidWakeMin + (24 * 60);
   }
-  sleepMinutes = sleepMinutes - bedMinutes; 
-  $('#answer171981X87X1189').val(Math.floor(sleepMinutes / 60) + ':' + ('0' + (sleepMinutes % 60)).slice(-2)); 
-  $('#answer171981X87X1189').change();  
+  timeDidWakeMin = timeDidWakeMin - timeFellAsleepMin; 
+
+  // Set to [V]TotalSleepTime
+  $('#answer959247X285X3189').val(Math.floor(timeDidWakeMin / 60) + ':' + ('0' + (timeDidWakeMin % 60)).slice(-2)); 
+  $('#answer959247X285X3189').change();  
 } 
     </script>
