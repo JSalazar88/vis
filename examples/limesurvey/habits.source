@@ -194,17 +194,22 @@
          }
       };
 
-      // create timeline obj
-      var container = document.getElementById('visualization');
-      var timeline = new vis.Timeline(container, items, options);
-      
-      // set visibility explicitly
-      var timelineDiv = container.firstChild;
-      timelineDiv.style.visibility = "visible";
 
-      // set window, and first selection
-      timeline.setWindow(isoToday + "T13:00:00", isoTomorrow + "T11:00:00", { animation: { duration: animationDurMillis, easingFunction: "easeInOutQuad" } });
-      timeline.setSelection(1);
+      $(document).ready(function() { 
+	      // create timeline obj
+	      var container = document.getElementById('visualization');
+	      var timeline = new vis.Timeline(container, items, options);
+	      
+	      // set visibility explicitly
+	      //var timelineDiv = container.firstChild;
+	      //timelineDiv.style.visibility = "visible";
+	      var timelineDiv = container.childNodes;
+	      $('.vis-timeline').css("visibility", "visible");
+	      
+	      // set window, and first selection
+	      timeline.setWindow(isoToday + "T13:00:00", isoTomorrow + "T11:00:00", { animation: { duration: animationDurMillis, easingFunction: "easeInOutQuad" } });
+	      timeline.setSelection(1);
+      });
 
       // DEBUG: log all events
       // items.on('*', function (event, properties) {
