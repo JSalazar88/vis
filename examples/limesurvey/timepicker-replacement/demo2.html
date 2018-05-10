@@ -1,0 +1,27 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <!-- Custom styles for this template -->
+    <link rel="stylesheet" type="text/css" href="mtr-datepicker.min.css" />
+    <link rel="stylesheet" type="text/css" href="mtr-datepicker.default-theme.min.css" />
+  </head>
+
+  <body>
+    
+    <div class="col-sm-6 col-md-4">
+      <div id="datepicker-demo-custom"></div>
+    </div>
+
+    <script type="text/javascript" src="mtr-datepicker-timezones.js"></script>
+    <script type="text/javascript" src="mtr-datepicker.js"></script>
+
+    <script type="text/javascript">
+      var initDate = new Date(2011, 0, 21);
+      var demoDatepicker = MtrDatepicker({
+        target: 'datepicker-demo-custom',
+        timestamp: initDate.getTime(),
+      });
+    </script>
+  </body>
+</html>
+
