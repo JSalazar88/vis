@@ -147,6 +147,8 @@
 
   var minGlobal = new Date(nowYear, nowMonth-1, nowDay);   // month param expects zero-indexed
   var maxGlobal = new Date(tomYear, tomMonth-1, tomDay+1); // month param expects zero-indexed
+
+  // note: vis event times are ISO times, so we must convert min/max
   var minGlobalIso = minGlobal.toISOString(); // month param expects zero-indexed
   var maxGlobalIso = maxGlobal.toISOString(); // month param expects zero-indexed
 
@@ -179,29 +181,20 @@
 
     // bound items between neighbors, or global min/max
     onMoving: function (item, callback) { 
-      // note: vis event times are ISO times, so we must convert min/max
-      var leftMin = minGlobalIso;
-      var rightMax = maxGlobalIso;
-
       var prevIdx = item.id - 1;
       var nextIdx = item.id + 1;
 
-      // update neighbor limits
-      if (prevIdx > 0) leftMin = items.get(prevIdx).start;
-      if (nextIdx <= numSleepItems) rightMax = items.get(nextIdx).start;
+      // bound items to global bounds
+      if ( item.start < minGlobalIso ) {
+        item.start = minGlobalIso;
+      }
+      if (item.start > maxGlobalIso) {
+        item.start = maxGlobalIso;
+      }
+      if (item.end > maxGlobalIso) {
+        item.end   = maxGlobalIso;
+      }
 
-      // bound this item between neighbors
-      if (item.start < leftMin) { 
-        item.start = leftMin;
-        }
-      if (item.start > rightMax) { 
-        item.start = rightMax;
-        }
-      if (item.end   > rightMax) { 
-        item.end   = rightMax;
-        }
-
-      //logEvent(item, rightMax, isDebug);
       resetValue(item);
 
       // update time, and send back the (possibly) changed item
@@ -213,7 +206,45 @@
       // 12hr clock
       newHours = newHours%12;
       newHours = newHours ? newHours : 12;
-      item.content = sleepLabels[item.id] + ": " + newHours + ":" + newMins + " " + amPm;
+      var newTimeLabel = newHours + ":" + newMins + " " + amPm;
+      item.content = sleepLabels[item.id] + ": " + newTimeLabel;
+      
+      // update items to the left
+      var leftItem = item;
+      while (prevIdx > 0) {
+        leftItem = items.get(prevIdx);
+
+        if (item.start < leftItem.start) {
+          leftItem.start = item.start;
+          leftItem.content = sleepLabels[prevIdx] + ": " + newTimeLabel;
+          items.update(leftItem);
+        }
+        else break;
+
+        prevIdx--;
+      }
+
+      // update items to the right
+      var rightItem = item;
+      while (nextIdx <= numSleepItems) {
+        rightItem = items.get(nextIdx);
+
+        if (item.start > rightItem.start) {
+          rightItem.start = item.start;
+          rightItem.content = sleepLabels[nextIdx] + ": " + newTimeLabel;
+          items.update(rightItem);
+        }
+        else break;
+
+        nextIdx++;
+      }
+
+      // debug log
+      if ( isDebug == true ) {
+        logEvent(item.start, maxGlobalIso, isDebug);
+      }
+
+      // continue callback
       callback(item);
       }
   };
