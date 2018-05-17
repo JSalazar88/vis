@@ -19557,6 +19557,7 @@ ItemSet.prototype._onAddItem = function (event) {
  * @private
  */
 ItemSet.prototype._onMultiSelectItem = function (event) {
+  return;
   if (!this.options.selectable) return;
 
   var item = this.itemFromTarget(event);
