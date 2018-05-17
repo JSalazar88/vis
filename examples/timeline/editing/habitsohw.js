@@ -1,86 +1,4 @@
-<!DOCTYPE HTML>
-<html>
-  <head>
-    <title>Timeline | Manipulation example</title>
 
-    <style>
-      body, html {
-        font-family: arial, sans-serif;
-        font-size: 11pt;
-      }
-
-      .vis-item.vis-background.am {
-        background: linear-gradient(to right, rgba(90,103,144,1) , rgba(241,192,44,1));
-      }
-      .vis-item.vis-background.pm {
-        background: linear-gradient(to right, rgba(241,192,44,1) , rgba(90,103,144,1));
-      }
-      .vis-item.vis-background.day {
-        background: url("../../../dist/blurry2.jpg");
-        background-size: 100% 100%;
-      }
-      .vis-item.vis-background.am2 {
-        background-image:
-            url("../../../dist/starsLeft.png"),
-            radial-gradient(circle at right,  rgba(241,192,44,1) 0%,rgba(1,1,1,.1) 30%),
-            -webkit-linear-gradient(90deg, rgba(1,41,63,0.90) 10%, rgba(1,41,63,0.80) 25%, rgba(166, 230, 255, 0.95) 80%); /* Chrome 10+, Saf5.1+ */
-        background-image:
-            url("../../../dist/starsLeft.png"),
-            radial-gradient(circle at right,  rgba(241,192,44,1) 0%,rgba(1,1,1,.1) 30%),
-            -moz-linear-gradient(90deg, rgba(1,41,63,0.90) 10%, rgba(1,41,63,0.80) 25%, rgba(166, 230, 255, 0.95) 80%); /* FF3.6+ */
-        background-image:
-            url("../../../dist/starsLeft.png"),
-            radial-gradient(circle at right,  rgba(241,192,44,1) 0%,rgba(1,1,1,.1) 30%),
-            -ms-linear-gradient(90deg, rgba(1,41,63,0.90) 10%, rgba(1,41,63,0.80) 25%, rgba(166, 230, 255, 0.95) 80%); /* IE10 */
-        background-image:
-            url("../../../dist/starsLeft.png"),
-            radial-gradient(circle at right,  rgba(241,192,44,1) 0%,rgba(1,1,1,.1) 30%),
-            -o-linear-gradient(90deg, rgba(1,41,63,0.90) 10%, rgba(1,41,63,0.80) 25%, rgba(166, 230, 255, 0.95) 80%); /* Opera 11.10+ */
-        background-image:
-            url("../../../dist/starsLeft.png"),
-            radial-gradient(circle at right,  rgba(241,192,44,1) 0%,rgba(1,1,1,.1) 30%),
-            linear-gradient(90deg, rgba(1,41,63,0.90) 10%, rgba(1,41,63,0.80) 25%, rgba(166, 230, 255, 0.95) 80%); /* W3C */
-        background-size: 100% 100%;
-      }
-      .vis-item.vis-background.pm2 {
-        background-image:
-            url("../../../dist/starsRight.png"),
-            radial-gradient(circle at left,  rgba(241,192,44,1) 0%,rgba(1,1,1,.1) 30%),
-            -webkit-linear-gradient(90deg, rgba(166, 230, 255, 0.95) 10%, rgba(1,41,63,0.80) 75%, rgba(1,41,63,0.90) 90%); /* Chrome 10+, Saf5.1+ */
-        background-image:
-            url("../../../dist/starsRight.png"),
-            radial-gradient(circle at left,  rgba(241,192,44,1) 0%,rgba(1,1,1,.1) 30%),
-            -moz-linear-gradient(90deg, rgba(166, 230, 255, 0.95) 10%, rgba(1,41,63,0.80) 75%, rgba(1,41,63,0.90) 90%); /* FF3.6+ */
-        background-image:
-            url("../../../dist/starsRight.png"),
-            radial-gradient(circle at left,  rgba(241,192,44,1) 0%,rgba(1,1,1,.1) 30%),
-            -ms-linear-gradient(90deg, rgba(166, 230, 255, 0.95) 10%, rgba(1,41,63,0.80) 75%, rgba(1,41,63,0.90) 90%); /* IE10 */
-        background-image:
-            url("../../../dist/starsRight.png"),
-            radial-gradient(circle at left,  rgba(241,192,44,1) 0%,rgba(1,1,1,.1) 30%),
-            -o-linear-gradient(90deg, rgba(166, 230, 255, 0.95) 10%, rgba(1,41,63,0.80) 75%, rgba(1,41,63,0.90) 90%); /* Opera*/
-        background-image:
-            url("../../../dist/starsRight.png"),
-            radial-gradient(circle at left,  rgba(241,192,44,1) 0%,rgba(1,1,1,.1) 30%),
-            linear-gradient(90deg, rgba(166, 230, 255, 0.95) 10%, rgba(1,41,63,0.80) 75%, rgba(1,41,63,0.90) 90%); /* W3C */
-        background-size: 100% 100%;
-      }
-
-    </style>
-
-  <script src="../../../dist/vis.js"></script>
-  <link href="../../../dist/vis-timeline-graph2d.min.css" rel="stylesheet" type="text/css" />
-
-
-  </head>
-  <body>
-
-    <p>Show us what your typical sleep schedule looks like by adjusting the sliders below. You can also drag the timeline as needed (e.g. for shift workers).</p>
-
-    <div id="visualization"></div>
-    <div id="log"></div>
-
-    <script type="text/javascript">
       var isDebug = false;
       var numSleepItems = 5;
       var numMinutesPerStep = 10;
@@ -154,7 +72,7 @@
         zoomMax: 1000 * 60 * 60 * 48, // two days (millis)
         timeAxis: {scale: 'minute', step: numMinutesPerStep},
         height: '300px',
-        width: '1200px',
+        width: '100%',
 
         // self-explanatory settings
         multiselect: false,
@@ -187,6 +105,8 @@
           if (item.end > maxGlobalIso) {
             item.end   = maxGlobalIso;
           }
+
+          resetValue(item);
 
           // update time, and send back the (possibly) changed item
           var newTime = new Date(item.start);
@@ -240,17 +160,22 @@
         }
       };
 
-      // create timeline obj
-      var container = document.getElementById('visualization');
-      var timeline = new vis.Timeline(container, items, options);
-      
-      // set visibility explicitly
-      var timelineDiv = container.firstChild;
-      timelineDiv.style.visibility = "visible";
 
-      // set window, and first selection
-      timeline.setWindow(isoToday + "T13:00:00", isoTomorrow + "T11:00:00", {animation: {duration: animationDurMillis, easingFunction: "easeInOutQuad"}});
-      timeline.setSelection(1);
+      $(document).ready(function() {
+	      // create timeline obj
+	      var container = document.getElementById('visualization');
+	      var timeline = new vis.Timeline(container, items, options);
+	      
+	      // set visibility explicitly
+	      //var timelineDiv = container.firstChild;
+	      //timelineDiv.style.visibility = "visible";
+	      var timelineDiv = container.childNodes;
+	      $('.vis-timeline').css("visibility", "visible");
+
+	      // set window, and first selection
+	      timeline.setWindow(isoToday + "T13:00:00", isoTomorrow + "T11:00:00", {animation: {duration: animationDurMillis, easingFunction: "easeInOutQuad"}});
+	      timeline.setSelection(1);
+      });
 
       // DEBUG: log all events
       // items.on('*', function (event, properties) {
@@ -284,6 +209,87 @@
         return i;
       }
 
-    </script>
-  </body>
-</html>
+
+$(document).ready(function() {	
+	
+	//set Limesurvey value  
+	var keys = Object.keys(items._data);
+	for(var i=0;i<keys.length;i++){
+		var key = keys[i];  
+		sleep = items._data[key];
+		 
+		resetValue(sleep);
+	} 	
+});
+
+var fallAsleep = ''; 
+ 
+function resetValue(sleep){    
+
+	if(sleep.id == 1){//	BedTime 
+		$('#answer722256X100X1190').val(getHours(sleep.start));  
+		$('#answer722256X100X1190').change();
+		console.log('BedTime ==' + getHours(sleep.start));   
+	}else if(sleep.id == 2){// LightsOutTime
+		$('#answer722256X100X1191').val(getHours(sleep.start));  
+		$('#answer722256X100X1191').change();
+		console.log('LightsOutTime ==' + getHours(sleep.start));  
+		howMuchSleep();
+	}else if(sleep.id == 3){// Fall asleep
+		fallAsleep = getHours(sleep.start);  
+		console.log('Fall asleep ==' + getHours(sleep.start));   
+		howMuchSleep();
+	}else if(sleep.id == 4){ // WakeTime
+		$('#answer722256X100X1193').val(getHours(sleep.start)); 
+		$('#answer722256X100X1193').change();
+		console.log('WakeTime ==' + getHours(sleep.start));   
+		howMuchSleep();
+	}else if(sleep.id == 5){  // Out of bed
+		$('#answer722256X100X1194').val(getHours(sleep.start));
+		$('#answer722256X100X1194').change();
+		console.log('Out of bed ==' + getHours(sleep.start));   
+		howMuchSleep();
+	}
+}
+
+function getHours (start){   
+	var newTime = new Date(start);
+	var itemHours = newTime.getHours();
+	var itemMins = addZero(newTime.getMinutes());
+	return itemHours + ':' + itemMins; 
+}
+
+						
+function howMuchSleep (){  
+	calFallAsleep();
+	calHowMuchSleep();
+}
+
+function calFallAsleep(){   
+	var bed = $('#answer722256X100X1191').val().split(':'); 
+	var asleep = fallAsleep.split(':'); 
+	var bedMinutes = (bed[0] * 60) + parseInt(bed[1]);
+	var sleepMinutes = (asleep[0] * 60) + parseInt(asleep[1]); 
+	 
+	if(bedMinutes > sleepMinutes){// between midnight 
+		sleepMinutes = sleepMinutes + (24 * 60);
+	} 
+	sleepMinutes = sleepMinutes - bedMinutes; 
+	 
+	$('#answer722256X100X1192').val(Math.floor(sleepMinutes / 60) + ':' + ('0' + (sleepMinutes % 60)).slice(-2)); 
+	$('#answer722256X100X1192').change();
+}
+
+function calHowMuchSleep (){    
+	var sleep = $('#answer722256X100X1193').val().split(':'); 
+	var sleepMinutes = (sleep[0] * 60) + parseInt(sleep[1]);
+	var asleep = fallAsleep.split(':'); 
+	var bedMinutes = (asleep[0] * 60) + parseInt(asleep[1]);
+	
+	if(bedMinutes > sleepMinutes){// between midnight 
+		sleepMinutes = sleepMinutes + (24 * 60);
+	}
+	sleepMinutes = sleepMinutes - bedMinutes; 
+	$('#answer722256X100X1195').val(Math.floor(sleepMinutes / 60) + ':' + ('0' + (sleepMinutes % 60)).slice(-2)); 
+	$('#answer722256X100X1195').change();
+} 
