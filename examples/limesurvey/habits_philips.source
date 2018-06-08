@@ -149,6 +149,7 @@
 
   var minGlobal = new Date(nowYear, nowMonth-1, nowDay);   // month param expects zero-indexed
   var maxGlobal = new Date(tomYear, tomMonth-1, tomDay+1); // month param expects zero-indexed
+  // note: vis event times are ISO times, so we must convert min/max
   var minGlobalIso = minGlobal.toISOString(); // month param expects zero-indexed
   var maxGlobalIso = maxGlobal.toISOString(); // month param expects zero-indexed
 
@@ -161,7 +162,7 @@
     zoomMax: 1000 * 60 * 60 * 48, // two days (millis)
     timeAxis: { scale: 'minute', step: numMinutesPerStep },
     height: '300px',
-    width: '1100px',
+    width: '100%',
 
     // self-explanatory settings
     multiselect: false,
@@ -218,6 +219,7 @@
           leftItem.start = item.start;
           leftItem.content = sleepLabels[prevIdx] + ": " + newTimeLabel;
           items.update(leftItem);
+          resetValue(leftItem);
         }
         else break;
 
@@ -233,6 +235,7 @@
           rightItem.start = item.start;
           rightItem.content = sleepLabels[nextIdx] + ": " + newTimeLabel;
           items.update(rightItem);
+          resetValue(rightItem);
         }
         else break;
 
